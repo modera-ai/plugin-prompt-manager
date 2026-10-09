@@ -1,0 +1,25 @@
+{
+  "name": "@modera-plugin/prompt-manager",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "plugin.json",
+    "dist"
+  ],
+  "scripts": {
+    "build": "modera-plugin-build ."
+  },
+  "devDependencies": {
+    "@modera/plugin-build": "0.1.0",
+    "@modera/plugin-sdk": "0.1.0"
+  },
+  "dependencies": {
+    "@modera/contracts": "0.1.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "lucide-react": "^1.17.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  }
+}
