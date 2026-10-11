@@ -27,5 +27,7 @@
     "waitForReady": true,
     "width": "wide",
     "locales": { "zh-CN": { "title": "系统提示词" } }
-  }
+  },
+  "extensions": ["settings"],
+  "contributions": ["promptEditor"]
 }
