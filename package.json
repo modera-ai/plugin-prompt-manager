@@ -10,7 +10,8 @@
   "scripts": {
     "build": "modera-plugin-build .",
     "pack": "modera-plugin pack .",
-    "release": "modera-plugin release . --publish"
+    "release": "modera-plugin release . --publish",
+    "dev": "node tools/modera-dev.mjs"
   },
   "devDependencies": {
     "@modera/contracts": "file:vendor/modera-contracts-0.1.0.tgz",
@@ -18,7 +19,6 @@
     "@modera/plugin-sdk": "file:vendor/modera-plugin-sdk-0.1.0.tgz"
   },
   "dependencies": {
-    "@modera/contracts": "file:vendor/modera-contracts-0.1.0.tgz",
     "lucide-react": "^1.17.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
