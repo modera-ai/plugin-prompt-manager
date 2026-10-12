@@ -1,15 +1,14 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import {
-  FileText,
-  MessageSquare,
-  RotateCcw,
-  X,
-  ChevronDown,
-  Check,
-  Eye,
-  RefreshCw,
-  Pencil,
-} from "lucide-react";
+import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/csr/FileText";
+import { ChatIcon as MessageSquare } from "@phosphor-icons/react/dist/csr/Chat";
+import { ArrowCounterClockwiseIcon as RotateCcw } from "@phosphor-icons/react/dist/csr/ArrowCounterClockwise";
+import { XIcon as X } from "@phosphor-icons/react/dist/csr/X";
+import { CaretDownIcon as ChevronDown } from "@phosphor-icons/react/dist/csr/CaretDown";
+import { CheckIcon as Check } from "@phosphor-icons/react/dist/csr/Check";
+import { EyeIcon as Eye } from "@phosphor-icons/react/dist/csr/Eye";
+import { ArrowsClockwiseIcon as RefreshCw } from "@phosphor-icons/react/dist/csr/ArrowsClockwise";
+import { PencilIcon as Pencil } from "@phosphor-icons/react/dist/csr/Pencil";
+
 import {
   mountPlugin,
   frontend,
@@ -502,7 +501,7 @@ function PromptSettings() {
               setActiveKey(undefined);
             }}
           >
-            <Eye size={15} />
+            <Eye size={15} weight={preview ? "fill" : "regular"} />
             {preview
               ? t("返回编辑", "Back to editing")
               : t("纯文本预览", "Plain text preview")}
