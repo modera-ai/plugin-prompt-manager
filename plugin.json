@@ -3,7 +3,7 @@
   "activationScope": "global",
   "id": "modera.prompt-manager",
   "name": "System prompts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "category": "knowledge",
   "icon": "file",
   "description": "Edit the system prompt as a document, with source annotations for every plugin.",
