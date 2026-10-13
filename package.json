@@ -19,6 +19,7 @@
     "@modera/plugin-sdk": "file:vendor/modera-plugin-sdk-0.1.0.tgz"
   },
   "dependencies": {
+    "@modera/ui": "file:vendor/modera-ui-0.1.0.tgz",
     "@phosphor-icons/react": "^2.1.10",
     "lucide-react": "^1.17.0",
     "react": "^19.1.1",

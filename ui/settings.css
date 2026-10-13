@@ -683,3 +683,14 @@
   color: var(--settings-muted);
   opacity: 1;
 }
+
+.prompt-settings-ui { min-height: 100dvh; --settings-border: var(--mu-line); --settings-muted: var(--mu-muted); --settings-focus: var(--mu-accent); --settings-danger: var(--mu-danger); }
+.prompt-settings-ui .prompt-header { min-height: 32px; justify-content: flex-end; padding: 0; border: 0; margin-bottom: 16px; }
+.prompt-settings-ui .prompt-controls { gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.prompt-settings-ui .prompt-scope-select { width: 128px; }
+.prompt-settings-ui .prompt-workspace { min-height: 0; }
+.prompt-settings-ui .prompt-comment-marker.mu-button { min-height: 28px; width: 28px; padding: 5px; }
+.prompt-settings-ui .prompt-footer { gap: 12px; }
+@media (max-width: 520px) { .prompt-settings-ui .prompt-controls { justify-content: flex-start; } .prompt-settings-ui .prompt-footer { flex-wrap: wrap; } }
+
+.prompt-settings-ui .prompt-scope-control { width: 128px; flex: none; }

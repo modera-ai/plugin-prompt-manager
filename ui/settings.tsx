@@ -1,5 +1,4 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { FileTextIcon as FileText } from "@phosphor-icons/react/dist/csr/FileText";
 import { ChatIcon as MessageSquare } from "@phosphor-icons/react/dist/csr/Chat";
 import { ArrowCounterClockwiseIcon as RotateCcw } from "@phosphor-icons/react/dist/csr/ArrowCounterClockwise";
 import { XIcon as X } from "@phosphor-icons/react/dist/csr/X";
@@ -13,7 +12,6 @@ import {
   mountPlugin,
   frontend,
   usePluginSnapshot,
-  Button,
 } from "@modera/plugin-sdk/react";
 import {
   promptBlockKey,
@@ -23,6 +21,11 @@ import {
   type PromptDocumentBlock,
   type PromptDocumentEdit,
 } from "@modera/contracts";
+
+import { Button, Select, UiProvider } from "@modera/ui";
+import { SettingsPage } from "@modera/ui/settings";
+import "@modera/ui/styles.css";
+import "./settings.css";
 
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -93,14 +96,14 @@ function DocumentText({
       <div className="prompt-inline-editor">
         <div className="prompt-editor-toolbar">
           <span>Markdown</span>
-          <button disabled={disabled} onClick={() => onEditing(false)}>
+          <Button disabled={disabled} onClick={() => onEditing(false)}>
             <Check size={14} />
             {zh ? "完成编辑" : "Done editing"}
-          </button>
+          </Button>
         </div>
         <textarea
           ref={editor}
-          className="prompt-markdown-input"
+          className="mu-input mu-textarea prompt-markdown-input"
           aria-label={label}
           value={value}
           readOnly={disabled}
@@ -382,7 +385,7 @@ function PromptSettings() {
           <MessageSquare size={17} />
         </div>
         <div>
-          <button
+          <Button
             className="annotation-plugin-link"
             title={active.owner}
             onClick={() =>
@@ -392,15 +395,15 @@ function PromptSettings() {
             }
           >
             {pluginName(active.owner)} <ChevronDown size={12} />
-          </button>
+          </Button>
           <small>{t("提示词来源", "Prompt source")}</small>
         </div>
-        <button
+        <Button
           aria-label={t("关闭批注", "Close annotation")}
           onClick={() => setActiveKey(undefined)}
         >
           <X size={16} />
-        </button>
+        </Button>
       </div>
       <dl>
         <dt>{t("来源", "Source")}</dt>
@@ -425,32 +428,32 @@ function PromptSettings() {
             "插件原文已变化。重新确认后，才能保存这份覆盖。",
             "The source changed. Review it before saving this override.",
           )}
-          <button
+          <Button
             onClick={() =>
               update(active, activeEdit!.text, activeEdit!.disabled)
             }
           >
             {t("保留修改，确认新原文", "Keep edits and acknowledge source")}
-          </button>
+          </Button>
         </p>
       )}
       <div className="annotation-actions">
-        <button
+        <Button
           disabled={busy || !!activeEdit?.disabled}
           onClick={() => setEditingKey(activeKey)}
         >
           <Pencil size={13} />
           {t("编辑", "Edit")}
-        </button>
-        <button
+        </Button>
+        <Button
           aria-expanded={showOriginal}
           onClick={() => setShowOriginal(!showOriginal)}
         >
           {showOriginal
             ? t("收起原文", "Hide original")
             : t("查看原文", "View original")}
-        </button>
-        <button
+        </Button>
+        <Button
           disabled={busy || !current.has(activeKey!)}
           title={t(
             "撤销当前范围的调整，恢复继承",
@@ -465,8 +468,8 @@ function PromptSettings() {
         >
           <RotateCcw size={13} />
           {t("恢复", "Restore")}
-        </button>
-        <button
+        </Button>
+        <Button
           disabled={busy}
           onClick={() =>
             update(
@@ -477,22 +480,18 @@ function PromptSettings() {
           }
         >
           {activeEdit?.disabled ? t("启用", "Enable") : t("停用", "Disable")}
-        </button>
+        </Button>
       </div>
       {showOriginal && <pre className="annotation-original">{active.text}</pre>}
     </aside>
   );
 
   return (
-    <main className="prompt-page">
+    <UiProvider theme={snapshot?.theme?.mode ?? "system"} locale={zh ? "zh-CN" : "en"} className="prompt-settings-ui mu-settings-codex"><SettingsPage className="prompt-page" title={t("系统提示词", "System prompt")} description={t("编辑提示词文档，查看并管理各插件提供的内容。", "Edit the prompt document and manage content from each plugin.")}>
       <header className="prompt-header">
-        <div className="prompt-title">
-          <FileText size={18} strokeWidth={1.5} />
-          <h1>{t("系统提示词", "System prompt")}</h1>
-        </div>
         <div className="prompt-controls">
-          <button
-            className="prompt-preview"
+          <Button
+            variant="quiet" className="prompt-preview"
             disabled={!state}
             aria-pressed={preview}
             onClick={() => {
@@ -505,33 +504,20 @@ function PromptSettings() {
             {preview
               ? t("返回编辑", "Back to editing")
               : t("纯文本预览", "Plain text preview")}
-          </button>
+          </Button>
 
-          <label className="prompt-scope">
-            <span className="sr-only">{t("保存范围", "Scope")}</span>
-            <select
-              aria-label={t("保存范围", "Scope")}
-              value={scope}
-              disabled={busy}
-              onChange={(event) => navigate(event.target.value as Scope)}
-            >
-              <option value="global">{t("全局", "Global")}</option>
-              <option value="project" disabled={!projectId}>
-                {t("当前项目", "Current project")}
-              </option>
-            </select>
-            <ChevronDown size={14} />
-          </label>
+          <span className="prompt-scope-control"><Select label={t("保存范围", "Scope")} className="prompt-scope-select" value={scope} disabled={busy} onValueChange={value => navigate(value as Scope)} options={[{ value: "global", label: t("全局", "Global") }, { value: "project", label: t("当前项目", "Current project"), disabled: !projectId }]} /></span>
+
           <Button
             disabled={busy || !state}
-            title={t("重新读取插件原文", "Reload source text")}
+            variant="outline" size="icon" title={t("重新读取插件原文", "Reload source text")}
             aria-label={t("重新加载", "Reload")}
             onClick={() => navigate("reload")}
           >
             <RefreshCw size={16} />
           </Button>
           <Button
-            className="df-button primary prompt-save"
+            variant="primary" className="prompt-save"
             disabled={!dirty || busy}
             onClick={() => void save()}
           >
@@ -551,9 +537,9 @@ function PromptSettings() {
       {(error || snapshotError) && (
         <div className="prompt-status" role="alert">
           {error || snapshotError}
-          <button onClick={() => navigate("reload")}>
+          <Button onClick={() => navigate("reload")}>
             {t("重新加载", "Reload")}
-          </button>
+          </Button>
         </div>
       )}
       {!state ? (
@@ -633,7 +619,7 @@ function PromptSettings() {
                         onSelect={(y) => select(block, y)}
                       />
                     )}
-                    <button
+                    <Button
                       className="prompt-comment-marker"
                       aria-label={t("查看来源批注", "Show source annotation")}
                       title={t("查看来源", "Show source")}
@@ -641,7 +627,7 @@ function PromptSettings() {
                     >
                       <MessageSquare size={15} />
                       {edit && <span />}
-                    </button>
+                    </Button>
                     {narrow && activeKey === key && annotationView}
                   </section>
                 );
@@ -717,7 +703,7 @@ function PromptSettings() {
                 {t("放弃修改", "Discard")}
               </Button>
               <Button
-                className="df-button primary"
+                variant="primary"
                 onClick={() => {
                   setPending(undefined);
                   void save();
@@ -729,7 +715,7 @@ function PromptSettings() {
           </div>
         </div>
       )}
-    </main>
+    </SettingsPage></UiProvider>
   );
 }
 
