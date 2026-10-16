@@ -1,5 +1,5 @@
 {
-  "name": "@modera-plugin/prompt-manager",
+  "name": "@pal-plugin/prompt-manager",
   "version": "0.1.2",
   "type": "module",
   "license": "MIT",
@@ -8,18 +8,18 @@
     "dist"
   ],
   "scripts": {
-    "build": "modera-plugin-build .",
-    "pack": "modera-plugin pack .",
-    "release": "modera-plugin release . --publish",
-    "dev": "node tools/modera-dev.mjs"
+    "build": "pal-plugin-build .",
+    "pack": "pal-plugin pack .",
+    "release": "pal-plugin release . --publish",
+    "dev": "node tools/pal-dev.mjs"
   },
   "devDependencies": {
-    "@modera/contracts": "file:vendor/modera-contracts-0.1.0.tgz",
-    "@modera/plugin-build": "file:vendor/modera-plugin-build-0.1.0.tgz",
-    "@modera/plugin-sdk": "file:vendor/modera-plugin-sdk-0.1.0.tgz"
+    "@pal/contracts": "file:vendor/pal-contracts-0.1.0.tgz",
+    "@pal/plugin-build": "file:vendor/pal-plugin-build-0.1.0.tgz",
+    "@pal/plugin-sdk": "file:vendor/pal-plugin-sdk-0.1.0.tgz",
+    "@pal/ui": "file:vendor/pal-ui-0.1.0.tgz"
   },
   "dependencies": {
-    "@modera/ui": "file:vendor/modera-ui-0.1.0.tgz",
     "@phosphor-icons/react": "^2.1.10",
     "lucide-react": "^1.17.0",
     "react": "^19.1.1",

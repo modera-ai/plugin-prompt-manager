@@ -12,7 +12,7 @@ import {
   mountPlugin,
   frontend,
   usePluginSnapshot,
-} from "@modera/plugin-sdk/react";
+} from "@pal/plugin-sdk/react";
 import {
   promptBlockKey,
   serializePromptDocument,
@@ -20,11 +20,11 @@ import {
   PROMPT_PROJECT_HEADING,
   type PromptDocumentBlock,
   type PromptDocumentEdit,
-} from "@modera/contracts";
+} from "@pal/contracts";
 
-import { Button, Select, UiProvider } from "@modera/ui";
-import { SettingsPage } from "@modera/ui/settings";
-import "@modera/ui/styles.css";
+import { Button, Select, UiProvider } from "@pal/ui";
+import { SettingsPage } from "@pal/ui/settings";
+import "@pal/ui/styles.css";
 import "./settings.css";
 
 import Markdown from "react-markdown";
@@ -265,9 +265,9 @@ function PromptSettings() {
     setError("");
     setMessage("");
     try {
-      const next = (await frontend().settings.action(
-        "read",
-        JSON.stringify({ scope: target }),
+      const next = (await frontend().settings.commands!.execute(
+        "pal.prompt-manager.read",
+        { scope: target },
       )) as DocumentState;
       if (version !== requestVersion.current) return;
       setState(next);
@@ -316,9 +316,9 @@ function PromptSettings() {
     setError("");
     setMessage("");
     try {
-      const next = (await frontend().settings.action(
-        "save",
-        JSON.stringify({ scope, revision: state.revision, edits }),
+      const next = (await frontend().settings.commands!.execute(
+        "pal.prompt-manager.save",
+        { scope, revision: state.revision, edits },
       )) as DocumentState;
       setState(next);
       setEdits(next.edits);
@@ -487,235 +487,273 @@ function PromptSettings() {
   );
 
   return (
-    <UiProvider theme={snapshot?.theme?.mode ?? "system"} locale={zh ? "zh-CN" : "en"} className="prompt-settings-ui mu-settings-codex"><SettingsPage className="prompt-page" title={t("系统提示词", "System prompt")} description={t("编辑提示词文档，查看并管理各插件提供的内容。", "Edit the prompt document and manage content from each plugin.")}>
-      <header className="prompt-header">
-        <div className="prompt-controls">
-          <Button
-            variant="quiet" className="prompt-preview"
-            disabled={!state}
-            aria-pressed={preview}
-            onClick={() => {
-              setPreview(!preview);
-              setEditingKey(undefined);
-              setActiveKey(undefined);
-            }}
-          >
-            <Eye size={15} weight={preview ? "fill" : "regular"} />
-            {preview
-              ? t("返回编辑", "Back to editing")
-              : t("纯文本预览", "Plain text preview")}
-          </Button>
+    <UiProvider
+      theme={snapshot?.theme?.mode ?? "system"}
+      locale={zh ? "zh-CN" : "en"}
+      className="prompt-settings-ui mu-settings-codex"
+    >
+      <SettingsPage
+        className="prompt-page"
+        title={t("系统提示词", "System prompt")}
+        description={t(
+          "编辑提示词文档，查看并管理各插件提供的内容。",
+          "Edit the prompt document and manage content from each plugin.",
+        )}
+      >
+        <header className="prompt-header">
+          <div className="prompt-controls">
+            <Button
+              variant="quiet"
+              className="prompt-preview"
+              disabled={!state}
+              aria-pressed={preview}
+              onClick={() => {
+                setPreview(!preview);
+                setEditingKey(undefined);
+                setActiveKey(undefined);
+              }}
+            >
+              <Eye size={15} weight={preview ? "fill" : "regular"} />
+              {preview
+                ? t("返回编辑", "Back to editing")
+                : t("纯文本预览", "Plain text preview")}
+            </Button>
 
-          <span className="prompt-scope-control"><Select label={t("保存范围", "Scope")} className="prompt-scope-select" value={scope} disabled={busy} onValueChange={value => navigate(value as Scope)} options={[{ value: "global", label: t("全局", "Global") }, { value: "project", label: t("当前项目", "Current project"), disabled: !projectId }]} /></span>
+            <span className="prompt-scope-control">
+              <Select
+                label={t("保存范围", "Scope")}
+                className="prompt-scope-select"
+                value={scope}
+                disabled={busy}
+                onValueChange={(value) => navigate(value as Scope)}
+                options={[
+                  { value: "global", label: t("全局", "Global") },
+                  {
+                    value: "project",
+                    label: t("当前项目", "Current project"),
+                    disabled: !projectId,
+                  },
+                ]}
+              />
+            </span>
 
-          <Button
-            disabled={busy || !state}
-            variant="outline" size="icon" title={t("重新读取插件原文", "Reload source text")}
-            aria-label={t("重新加载", "Reload")}
-            onClick={() => navigate("reload")}
-          >
-            <RefreshCw size={16} />
-          </Button>
-          <Button
-            variant="primary" className="prompt-save"
-            disabled={!dirty || busy}
-            onClick={() => void save()}
-          >
-            {busy ? t("处理中…", "Working…") : t("保存", "Save")}
-          </Button>
-        </div>
-      </header>
-      <div className="prompt-document-caption">
-        <span>{t("Markdown 文档", "Markdown document")}</span>
-        <span>
-          {t(
-            "单击查看来源 · 双击编辑",
-            "Click for source · double-click to edit",
-          )}
-        </span>
-      </div>
-      {(error || snapshotError) && (
-        <div className="prompt-status" role="alert">
-          {error || snapshotError}
-          <Button onClick={() => navigate("reload")}>
-            {t("重新加载", "Reload")}
-          </Button>
-        </div>
-      )}
-      {!state ? (
-        <div className="prompt-empty">
-          {busy
-            ? t("正在读取提示词…", "Loading prompt…")
-            : t(
-                "暂时无法读取提示词，请重新加载。",
-                "Unable to load the prompt. Please retry.",
-              )}
-        </div>
-      ) : (
-        <div
-          className={`prompt-workspace ${active ? "has-annotation" : ""}`}
-          ref={workspace}
-        >
-          <article
-            className="prompt-document"
-            aria-label={t("系统提示词文档", "System prompt document")}
-          >
-            {preview ? (
-              <pre className="prompt-final">{finalText}</pre>
-            ) : (
-              state.blocks.map((block, index) => {
-                const key = promptBlockKey(block),
-                  edit = effective.get(key);
-                const value = edit?.text ?? block.text;
-                const firstOfKind =
-                  index ===
-                  state.blocks.findIndex((item) => item.kind === block.kind);
-                return (
-                  <section
-                    className={`prompt-range ${activeKey === key ? "selected" : ""} ${edit?.disabled ? "disabled" : ""}`}
-                    key={key}
-                    data-source-key={key}
-                  >
-                    {firstOfKind && block.kind !== "base" && (
-                      <p className="prompt-group-heading">
-                        {block.kind === "guidance"
-                          ? PROMPT_GUIDANCE_HEADING
-                          : PROMPT_PROJECT_HEADING}
-                      </p>
-                    )}
-                    {edit?.disabled ? (
-                      <details className="prompt-fold" key={`disabled-${key}`}>
-                        <summary
-                          onClick={(event) => select(block, event.clientY)}
-                        >
-                          <ChevronDown size={15} />
-                          <span>{block.source ?? pluginName(block.owner)}</span>
-                          <small>{t("已停用", "Disabled")}</small>
-                        </summary>
-                        <div className="prompt-fold-content">
-                          <DocumentText
-                            value={value}
-                            label={`${t("停用的提示词", "Disabled prompt")}: ${block.source ?? block.owner}`}
-                            disabled
-                            editing={false}
-                            onEditing={() => {}}
-                            zh={zh}
-                            onChange={() => {}}
-                            onSelect={(y) => select(block, y)}
-                          />
-                        </div>
-                      </details>
-                    ) : (
-                      <DocumentText
-                        value={value}
-                        label={`${t("编辑提示词", "Edit prompt")}: ${block.source ?? block.owner}`}
-                        disabled={busy}
-                        editing={editingKey === key}
-                        zh={zh}
-                        onEditing={(editing) =>
-                          setEditingKey(editing ? key : undefined)
-                        }
-                        onChange={(text) => update(block, text)}
-                        onSelect={(y) => select(block, y)}
-                      />
-                    )}
-                    <Button
-                      className="prompt-comment-marker"
-                      aria-label={t("查看来源批注", "Show source annotation")}
-                      title={t("查看来源", "Show source")}
-                      onClick={(event) => select(block, event.clientY)}
-                    >
-                      <MessageSquare size={15} />
-                      {edit && <span />}
-                    </Button>
-                    {narrow && activeKey === key && annotationView}
-                  </section>
-                );
-              })
+            <Button
+              disabled={busy || !state}
+              variant="outline"
+              size="icon"
+              title={t("重新读取插件原文", "Reload source text")}
+              aria-label={t("重新加载", "Reload")}
+              onClick={() => navigate("reload")}
+            >
+              <RefreshCw size={16} />
+            </Button>
+            <Button
+              variant="primary"
+              className="prompt-save"
+              disabled={!dirty || busy}
+              onClick={() => void save()}
+            >
+              {busy ? t("处理中…", "Working…") : t("保存", "Save")}
+            </Button>
+          </div>
+        </header>
+        <div className="prompt-document-caption">
+          <span>{t("Markdown 文档", "Markdown document")}</span>
+          <span>
+            {t(
+              "单击查看来源 · 双击编辑",
+              "Click for source · double-click to edit",
             )}
-            {!state.blocks.length && (
+          </span>
+        </div>
+        {(error || snapshotError) && (
+          <div className="prompt-status" role="alert">
+            {error || snapshotError}
+            <Button onClick={() => navigate("reload")}>
+              {t("重新加载", "Reload")}
+            </Button>
+          </div>
+        )}
+        {!state ? (
+          <div className="prompt-empty">
+            {busy
+              ? t("正在读取提示词…", "Loading prompt…")
+              : t(
+                  "暂时无法读取提示词，请重新加载。",
+                  "Unable to load the prompt. Please retry.",
+                )}
+          </div>
+        ) : (
+          <div
+            className={`prompt-workspace ${active ? "has-annotation" : ""}`}
+            ref={workspace}
+          >
+            <article
+              className="prompt-document"
+              aria-label={t("系统提示词文档", "System prompt document")}
+            >
+              {preview ? (
+                <pre className="prompt-final">{finalText}</pre>
+              ) : (
+                state.blocks.map((block, index) => {
+                  const key = promptBlockKey(block),
+                    edit = effective.get(key);
+                  const value = edit?.text ?? block.text;
+                  const firstOfKind =
+                    index ===
+                    state.blocks.findIndex((item) => item.kind === block.kind);
+                  return (
+                    <section
+                      className={`prompt-range ${activeKey === key ? "selected" : ""} ${edit?.disabled ? "disabled" : ""}`}
+                      key={key}
+                      data-source-key={key}
+                    >
+                      {firstOfKind && block.kind !== "base" && (
+                        <p className="prompt-group-heading">
+                          {block.kind === "guidance"
+                            ? PROMPT_GUIDANCE_HEADING
+                            : PROMPT_PROJECT_HEADING}
+                        </p>
+                      )}
+                      {edit?.disabled ? (
+                        <details
+                          className="prompt-fold"
+                          key={`disabled-${key}`}
+                        >
+                          <summary
+                            onClick={(event) => select(block, event.clientY)}
+                          >
+                            <ChevronDown size={15} />
+                            <span>
+                              {block.source ?? pluginName(block.owner)}
+                            </span>
+                            <small>{t("已停用", "Disabled")}</small>
+                          </summary>
+                          <div className="prompt-fold-content">
+                            <DocumentText
+                              value={value}
+                              label={`${t("停用的提示词", "Disabled prompt")}: ${block.source ?? block.owner}`}
+                              disabled
+                              editing={false}
+                              onEditing={() => {}}
+                              zh={zh}
+                              onChange={() => {}}
+                              onSelect={(y) => select(block, y)}
+                            />
+                          </div>
+                        </details>
+                      ) : (
+                        <DocumentText
+                          value={value}
+                          label={`${t("编辑提示词", "Edit prompt")}: ${block.source ?? block.owner}`}
+                          disabled={busy}
+                          editing={editingKey === key}
+                          zh={zh}
+                          onEditing={(editing) =>
+                            setEditingKey(editing ? key : undefined)
+                          }
+                          onChange={(text) => update(block, text)}
+                          onSelect={(y) => select(block, y)}
+                        />
+                      )}
+                      <Button
+                        className="prompt-comment-marker"
+                        aria-label={t("查看来源批注", "Show source annotation")}
+                        title={t("查看来源", "Show source")}
+                        onClick={(event) => select(block, event.clientY)}
+                      >
+                        <MessageSquare size={15} />
+                        {edit && <span />}
+                      </Button>
+                      {narrow && activeKey === key && annotationView}
+                    </section>
+                  );
+                })
+              )}
+              {!state.blocks.length && (
+                <p>
+                  {t(
+                    "当前没有可用的提示词。",
+                    "No prompt sources are available.",
+                  )}
+                </p>
+              )}
+              <div className="prompt-document-end" aria-hidden="true" />
+            </article>
+            {!narrow && annotationView}
+          </div>
+        )}
+        <footer className="prompt-footer">
+          <span>
+            {finalText.length.toLocaleString()} {t("字符", "characters")}
+            <span className="footer-dot">·</span>
+            {state?.blocks.length ?? 0} {t("个来源片段", "source sections")}
+            {changes > 0 && (
+              <>
+                <span className="footer-dot">·</span>
+                {changes} {t("处覆盖", "overrides")}
+              </>
+            )}
+          </span>
+          <span
+            className="prompt-save-status"
+            aria-live="polite"
+            role="status"
+            title={t(
+              "工作区预览；实际请求随会话、工具和运行模式变化",
+              "Workspace preview; requests vary by session, tools and mode",
+            )}
+          >
+            {dirty ? t("未保存", "Unsaved") : <Check size={12} />}
+            {!dirty && (message || t("原文已保留", "Sources preserved"))}
+          </span>
+        </footer>
+        {pending && (
+          <div className="prompt-dialog-backdrop">
+            <div
+              ref={dialog}
+              className="prompt-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="discard-title"
+            >
+              <h2 id="discard-title">
+                {t("保留这次修改？", "Keep your edits?")}
+              </h2>
               <p>
                 {t(
-                  "当前没有可用的提示词。",
-                  "No prompt sources are available.",
+                  "切换范围或重新加载会替换当前文档。你可以先保存，或放弃尚未保存的修改。",
+                  "Switching scope or reloading replaces the document. Save first or discard unsaved edits.",
                 )}
               </p>
-            )}
-            <div className="prompt-document-end" aria-hidden="true" />
-          </article>
-          {!narrow && annotationView}
-        </div>
-      )}
-      <footer className="prompt-footer">
-        <span>
-          {finalText.length.toLocaleString()} {t("字符", "characters")}
-          <span className="footer-dot">·</span>
-          {state?.blocks.length ?? 0} {t("个来源片段", "source sections")}
-          {changes > 0 && (
-            <>
-              <span className="footer-dot">·</span>
-              {changes} {t("处覆盖", "overrides")}
-            </>
-          )}
-        </span>
-        <span
-          className="prompt-save-status"
-          aria-live="polite"
-          role="status"
-          title={t(
-            "工作区预览；实际请求随会话、工具和运行模式变化",
-            "Workspace preview; requests vary by session, tools and mode",
-          )}
-        >
-          {dirty ? t("未保存", "Unsaved") : <Check size={12} />}
-          {!dirty && (message || t("原文已保留", "Sources preserved"))}
-        </span>
-      </footer>
-      {pending && (
-        <div className="prompt-dialog-backdrop">
-          <div
-            ref={dialog}
-            className="prompt-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="discard-title"
-          >
-            <h2 id="discard-title">
-              {t("保留这次修改？", "Keep your edits?")}
-            </h2>
-            <p>
-              {t(
-                "切换范围或重新加载会替换当前文档。你可以先保存，或放弃尚未保存的修改。",
-                "Switching scope or reloading replaces the document. Save first or discard unsaved edits.",
-              )}
-            </p>
-            <div>
-              <Button onClick={() => setPending(undefined)}>
-                {t("继续编辑", "Keep editing")}
-              </Button>
-              <Button
-                onClick={() => {
-                  const target = pending;
-                  setPending(undefined);
-                  void load(target === "reload" ? scope : target);
-                }}
-              >
-                {t("放弃修改", "Discard")}
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setPending(undefined);
-                  void save();
-                }}
-              >
-                {t("保存", "Save")}
-              </Button>
+              <div>
+                <Button onClick={() => setPending(undefined)}>
+                  {t("继续编辑", "Keep editing")}
+                </Button>
+                <Button
+                  onClick={() => {
+                    const target = pending;
+                    setPending(undefined);
+                    void load(target === "reload" ? scope : target);
+                  }}
+                >
+                  {t("放弃修改", "Discard")}
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setPending(undefined);
+                    void save();
+                  }}
+                >
+                  {t("保存", "Save")}
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </SettingsPage></UiProvider>
+        )}
+      </SettingsPage>
+    </UiProvider>
   );
 }
 

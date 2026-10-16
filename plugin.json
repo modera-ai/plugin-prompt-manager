@@ -1,7 +1,7 @@
 {
   "apiVersion": 1,
   "activationScope": "global",
-  "id": "modera.prompt-manager",
+  "id": "pal.prompt-manager",
   "name": "System prompts",
   "version": "0.1.2",
   "category": "knowledge",
@@ -16,18 +16,108 @@
   "main": "dist/index.cjs",
   "permissions": [
     "prompts.read",
-    "prompts.write",
-    "storage.read",
-    "storage.write"
+    "storage.read"
   ],
-  "frontends": { "settings": { "root": "dist/ui", "entry": "settings.html" } },
+  "frontends": {
+    "settings": {
+      "root": "dist/ui",
+      "entry": "settings.html"
+    }
+  },
   "settings": {
     "title": "System prompts",
     "frontend": "settings",
     "waitForReady": true,
     "width": "wide",
-    "locales": { "zh-CN": { "title": "系统提示词" } }
+    "locales": {
+      "zh-CN": {
+        "title": "系统提示词"
+      }
+    }
   },
-  "extensions": ["settings"],
-  "contributions": ["promptEditor"]
+  "extensions": [
+    "settings"
+  ],
+  "contributions": [
+    "promptEditor"
+  ],
+  "requiresHost": {
+    "plugin.commands.callable": 1,
+    "plugin.commands.dispatch": 1,
+    "context.commands": 1,
+    "plugin.declarations": 1,
+    "settings.commands": 1,
+    "context.promptDocuments.inspect": 1
+  },
+  "declarations": {
+    "provides": {
+      "commands": [
+        {
+          "id": "pal.prompt-manager.read",
+          "title": "读取系统提示词",
+          "visibility": "private",
+          "readOnly": true,
+          "requiredPermissions": [
+            "prompts.read",
+            "storage.read"
+          ],
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "enum": [
+                  "global",
+                  "project"
+                ]
+              }
+            },
+            "required": [
+              "scope"
+            ]
+          }
+        },
+        {
+          "id": "pal.prompt-manager.save",
+          "title": "保存系统提示词覆盖",
+          "visibility": "private",
+          "readOnly": false,
+          "requiredPermissions": [
+            "prompts.read",
+            "storage.read",
+            "prompts.write",
+            "storage.write"
+          ],
+          "inputSchema": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scope": {
+                "enum": [
+                  "global",
+                  "project"
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "edits": {
+                "type": "array",
+                "maxItems": 80,
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "scope",
+              "revision",
+              "edits"
+            ]
+          }
+        }
+      ]
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import { readFile, writeFile, rename, mkdir, unlink } from "node:fs/promises";
 import { dirname } from "node:path";
 import { randomUUID } from "node:crypto";
-import { promptBlockKey, type PromptDocumentEdit } from "@modera/plugin-sdk";
+import { promptBlockKey, type PromptDocumentEdit } from "@pal/plugin-sdk";
 
 export interface PromptScopeState {
   revision: number;

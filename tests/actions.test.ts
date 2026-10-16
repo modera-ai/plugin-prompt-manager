@@ -2,7 +2,7 @@ import { afterEach, expect, it } from "vitest";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { PluginContext, PromptDocumentBlock } from "@modera/plugin-sdk";
+import type { PluginContext, PromptDocumentBlock } from "@pal/plugin-sdk";
 import { activate } from "../src/index";
 
 const dirs: string[] = [];
