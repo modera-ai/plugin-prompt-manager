@@ -14,10 +14,7 @@
     }
   },
   "main": "dist/index.cjs",
-  "permissions": [
-    "prompts.read",
-    "storage.read"
-  ],
+  "permissions": ["pal.prompts.read", "pal.storage.read"],
   "frontends": {
     "settings": {
       "root": "dist/ui",
@@ -35,19 +32,15 @@
       }
     }
   },
-  "extensions": [
-    "settings"
-  ],
-  "contributions": [
-    "promptEditor"
-  ],
+  "extensions": ["pal.ui.settings"],
+  "contributions": ["promptEditor"],
   "requiresHost": {
     "pal.commands.callable": 1,
     "pal.commands.dispatch": 1,
-    "context.commands": 1,
-    "plugin.declarations": 1,
-    "settings.commands": 1,
-    "context.promptDocuments.inspect": 1
+    "pal.context.commands": 1,
+    "pal.plugin.declarations": 1,
+    "pal.settings.commands": 1,
+    "pal.context.promptDocuments.inspect": 1
   },
   "declarations": {
     "provides": {
@@ -57,24 +50,16 @@
           "title": "读取系统提示词",
           "visibility": "private",
           "readOnly": true,
-          "requiredPermissions": [
-            "prompts.read",
-            "storage.read"
-          ],
+          "requiredPermissions": ["pal.prompts.read", "pal.storage.read"],
           "inputSchema": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "scope": {
-                "enum": [
-                  "global",
-                  "project"
-                ]
+                "enum": ["global", "project"]
               }
             },
-            "required": [
-              "scope"
-            ]
+            "required": ["scope"]
           }
         },
         {
@@ -83,20 +68,17 @@
           "visibility": "private",
           "readOnly": false,
           "requiredPermissions": [
-            "prompts.read",
-            "storage.read",
-            "prompts.write",
-            "storage.write"
+            "pal.prompts.read",
+            "pal.storage.read",
+            "pal.prompts.write",
+            "pal.storage.write"
           ],
           "inputSchema": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "scope": {
-                "enum": [
-                  "global",
-                  "project"
-                ]
+                "enum": ["global", "project"]
               },
               "revision": {
                 "type": "integer",
@@ -110,11 +92,7 @@
                 }
               }
             },
-            "required": [
-              "scope",
-              "revision",
-              "edits"
-            ]
+            "required": ["scope", "revision", "edits"]
           }
         }
       ]
