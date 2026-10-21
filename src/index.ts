@@ -77,7 +77,7 @@ export const activate: PluginModule["activate"] = async (host) => {
   };
   const registered = await definePlugin((pal) => {
     for (const declaration of manifest.declarations.provides.commands)
-      pal.commands.register({
+      pal.command.register({
         ...declaration,
         visibility: "private",
         run: (input, execution) =>

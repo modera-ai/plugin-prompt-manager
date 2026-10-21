@@ -14,7 +14,10 @@
     }
   },
   "main": "dist/index.cjs",
-  "permissions": ["pal.prompts.read", "pal.storage.read"],
+  "permissions": [
+    "pal.prompts.read",
+    "pal.storage.read"
+  ],
   "frontends": {
     "settings": {
       "root": "dist/ui",
@@ -32,14 +35,18 @@
       }
     }
   },
-  "extensions": ["pal.ui.settings"],
-  "contributions": ["promptEditor"],
+  "extensions": [
+    "pal.ui.settings"
+  ],
+  "contributions": [
+    "promptEditor"
+  ],
   "requiresHost": {
-    "pal.commands.callable": 1,
-    "pal.commands.dispatch": 1,
-    "pal.context.commands": 1,
+    "pal.command.callable": 1,
+    "pal.command.dispatch": 1,
+    "pal.context.command": 1,
     "pal.plugin.declarations": 1,
-    "pal.settings.commands": 1,
+    "pal.command.settings": 1,
     "pal.context.promptDocuments.inspect": 1
   },
   "declarations": {
@@ -50,16 +57,24 @@
           "title": "读取系统提示词",
           "visibility": "private",
           "readOnly": true,
-          "requiredPermissions": ["pal.prompts.read", "pal.storage.read"],
+          "requiredPermissions": [
+            "pal.prompts.read",
+            "pal.storage.read"
+          ],
           "inputSchema": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "scope": {
-                "enum": ["global", "project"]
+                "enum": [
+                  "global",
+                  "project"
+                ]
               }
             },
-            "required": ["scope"]
+            "required": [
+              "scope"
+            ]
           }
         },
         {
@@ -78,7 +93,10 @@
             "additionalProperties": false,
             "properties": {
               "scope": {
-                "enum": ["global", "project"]
+                "enum": [
+                  "global",
+                  "project"
+                ]
               },
               "revision": {
                 "type": "integer",
@@ -92,8 +110,28 @@
                 }
               }
             },
-            "required": ["scope", "revision", "edits"]
+            "required": [
+              "scope",
+              "revision",
+              "edits"
+            ]
           }
+        }
+      ]
+    },
+    "consumes": {
+      "commands": [
+        {
+          "id": "pal.frontend.context",
+          "reason": "使用已声明前端的宿主能力"
+        },
+        {
+          "id": "pal.frontend.open-settings",
+          "reason": "使用已声明前端的宿主能力"
+        },
+        {
+          "id": "pal.frontend.settings",
+          "reason": "使用已声明前端的宿主能力"
         }
       ]
     }

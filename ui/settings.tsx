@@ -265,7 +265,7 @@ function PromptSettings() {
     setError("");
     setMessage("");
     try {
-      const next = (await frontend().settings.commands!.execute(
+      const next = (await frontend().command.execute(
         "pal.prompt-manager.read",
         { scope: target },
       )) as DocumentState;
@@ -316,7 +316,7 @@ function PromptSettings() {
     setError("");
     setMessage("");
     try {
-      const next = (await frontend().settings.commands!.execute(
+      const next = (await frontend().command.execute(
         "pal.prompt-manager.save",
         { scope, revision: state.revision, edits },
       )) as DocumentState;
