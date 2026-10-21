@@ -1,19 +1,14 @@
 {
-  "apiVersion": 1,
+  "title": "System prompts",
   "activationScope": "global",
-  "id": "pal.prompt-manager",
-  "name": "System prompts",
-  "version": "0.1.2",
   "category": "knowledge",
   "icon": "file",
-  "description": "Edit the system prompt as a document, with source annotations for every plugin.",
   "locales": {
     "zh-CN": {
       "name": "系统提示词",
       "description": "像编辑文档一样调整系统提示词，点击正文查看插件来源。"
     }
   },
-  "main": "dist/index.cjs",
   "permissions": [
     "pal.prompts.read",
     "pal.storage.read"

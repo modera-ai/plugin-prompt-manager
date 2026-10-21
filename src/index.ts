@@ -5,7 +5,7 @@ import {
   type PluginModule,
 } from "@pal/plugin-sdk";
 import { PromptStore, validateEdits } from "./store";
-import manifest from "../plugin.json";
+import manifest from "../pal-manifest.json";
 
 export const activate: PluginModule["activate"] = async (host) => {
   if (!host.promptDocuments)

@@ -4,27 +4,33 @@
   "type": "module",
   "license": "MIT",
   "files": [
-    "plugin.json",
+    "pal-manifest.json",
     "dist"
   ],
   "scripts": {
     "build": "pal-plugin-build .",
     "pack": "pal-plugin pack .",
-    "release": "pal-plugin release . --publish",
+    "release": "npm publish",
     "dev": "node tools/pal-dev.mjs"
   },
   "devDependencies": {
     "@pal/contracts": "file:vendor/pal-contracts-0.1.0.tgz",
     "@pal/plugin-build": "file:vendor/pal-plugin-build-0.1.0.tgz",
     "@pal/plugin-sdk": "file:vendor/pal-plugin-sdk-0.1.0.tgz",
-    "@pal/ui": "file:vendor/pal-ui-0.1.0.tgz"
-  },
-  "dependencies": {
+    "@pal/ui": "file:vendor/pal-ui-0.1.0.tgz",
     "@phosphor-icons/react": "^2.1.10",
     "lucide-react": "^1.17.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1"
-  }
+  },
+  "pal": {
+    "id": "pal.prompt-manager",
+    "apiVersion": 1,
+    "runtime": "node",
+    "manifest": "./pal-manifest.json"
+  },
+  "exports": "./dist/index.cjs",
+  "description": "Edit the system prompt as a document, with source annotations for every plugin."
 }
