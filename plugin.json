@@ -42,8 +42,8 @@
     "promptEditor"
   ],
   "requiresHost": {
-    "plugin.commands.callable": 1,
-    "plugin.commands.dispatch": 1,
+    "pal.commands.callable": 1,
+    "pal.commands.dispatch": 1,
     "context.commands": 1,
     "plugin.declarations": 1,
     "settings.commands": 1,
