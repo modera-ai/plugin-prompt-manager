@@ -11,7 +11,8 @@
     "build": "pal-plugin-build .",
     "pack": "pal-plugin pack .",
     "release": "npm publish",
-    "dev": "node tools/pal-dev.mjs"
+    "dev": "node tools/pal-dev.mjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p ui/tsconfig.json"
   },
   "devDependencies": {
     "@pal/contracts": "file:vendor/pal-contracts-0.1.0.tgz",

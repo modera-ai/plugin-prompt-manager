@@ -8,7 +8,12 @@
     "noEmit": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src", "ui"]
+  "include": [
+    "src/index.ts",
+    "src/**/*.worker.ts"
+  ]
 }

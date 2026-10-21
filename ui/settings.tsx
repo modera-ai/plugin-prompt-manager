@@ -8,11 +8,8 @@ import { EyeIcon as Eye } from "@phosphor-icons/react/dist/csr/Eye";
 import { ArrowsClockwiseIcon as RefreshCw } from "@phosphor-icons/react/dist/csr/ArrowsClockwise";
 import { PencilIcon as Pencil } from "@phosphor-icons/react/dist/csr/Pencil";
 
-import {
-  mountPlugin,
-  frontend,
-  usePluginSnapshot,
-} from "@pal/plugin-sdk/react";
+import { mountPlugin, usePluginSnapshot } from "@pal/plugin-sdk/react";
+import { pal } from "@pal/plugin-sdk";
 import {
   promptBlockKey,
   serializePromptDocument,
@@ -265,7 +262,7 @@ function PromptSettings() {
     setError("");
     setMessage("");
     try {
-      const next = (await frontend().command.execute(
+      const next = (await pal.command.execute(
         "pal.prompt-manager.read",
         { scope: target },
       )) as DocumentState;
@@ -281,7 +278,7 @@ function PromptSettings() {
     } finally {
       if (version === requestVersion.current) {
         setBusy(false);
-        void frontend().ready();
+        void pal.ready();
       }
     }
   }
@@ -316,7 +313,7 @@ function PromptSettings() {
     setError("");
     setMessage("");
     try {
-      const next = (await frontend().command.execute(
+      const next = (await pal.command.execute(
         "pal.prompt-manager.save",
         { scope, revision: state.revision, edits },
       )) as DocumentState;
@@ -389,7 +386,7 @@ function PromptSettings() {
             className="annotation-plugin-link"
             title={active.owner}
             onClick={() =>
-              void frontend()
+              void pal
                 .openSettings(`plugin-details:${active.owner}`)
                 .catch((cause) => setError(String(cause)))
             }
